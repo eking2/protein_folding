@@ -29,18 +29,42 @@ class ProteinNet(Dataset):
 
     def seq_to_ohe(self, seq):
 
-        """convert string sequence into one hot format NxNx20, pad up to max_len
+        """convert string sequence into 2-site one hot format NxNx42, +2 from padding
 
         Args:
             seq (str): amino acid sequence to convert
 
         Returns:
-            ohe_seq (tensor): sequence in one hot format, zeroed on non-matching indices
+            ohe_seq (tensor): sequence in 2-site one hot format, cat seq[i] + seq[j]
         """
 
+        # vocab
         key = 'ACDEFGHIKLMNPQRSTVWY'
+        key_chars = len(key) + 1
+        self.itos = dict(enumerate(key, 1))  # reserve 0 for padding
+        self.stoi = {char: i for i, char in self.itos.items()}
 
-        pass
+        # convert all sequences to labels
+        label_encoded = [self.stoi[char] for char in seq]
+
+        # one hot
+        ohe = np.eye(key_chars)[label_encoded]
+
+        # pad
+        to_pad = self.max_len - len(ohe)
+        ohe = np.concatenate([ohe, np.zeros((to_pad, key_chars))])
+
+        # cat seq[i] + seq[j]
+        ohe_seq = np.zeros((self.max_len, self.max_len, key_chars*2 ))
+
+        # (N, 21) to (N, N, 21)
+        ohe_repeat = np.repeat(np.expand_dims(ohe, 0), self.max_len, axis=0)  
+
+        ohe_seq[:, :, :21] = ohe_repeat
+        ohe_seq[:, :, 21:] = np.transpose(ohe_repeat, (1, 0, 2))
+
+        return ohe_seq
+
 
     def cat_pssm(self, pssm_ic):
 
@@ -48,27 +72,38 @@ class ProteinNet(Dataset):
         1-site information content by matrix mult, add padding
 
         Args:
-            pssm_ic (str): file path for pssm npz
+            pssm_ic (str): file path for pssm npy
 
         Returns:
-            evo_arr (tensor): pssm and ic features with shape NxNx41
+            evo_arr (tensor): pssm and ic features with shape NxNx42
         """
 
         # 20xN in amino acid alphabetical order, 1xN information content last row
 
-        # transpose to (N, 20)
-        pssm = np.load(pssm_ic).T
+        # reshape flat to (N, 21) 
+        pssm_ic = np.load(pssm_ic).reshape(21, -1).T
 
-        # each element cat pssm[i] + pssm[]
+        # pad
+        to_pad = self.max_len - len(pssm_ic)
+        pssm_ic = np.concatenate([pssm_ic, np.zeros((to_pad, 21))])
 
-        pass
+        # # each element cat pssm_ic[i] + pssm_ic[j]
+        evo_arr = np.zeros((self.max_len, self.max_len, 42))
+
+        # # (N, 21) to (N, N, 21)
+        pssm_repeat = np.repeat(np.expand_dims(pssm_ic, 0), self.max_len, axis=0)
+
+        evo_arr[:, :, :21] = pssm_repeat
+        evo_arr[:, :, 21:] = np.transpose(pssm_repeat, (1, 0, 2))
+
+        return evo_arr
 
     def tert_to_bins(self, tert):
 
         """pairwise distances between ca coordinates from tert records, padded
 
         Args:
-            tert (str): file path to tert npz
+            tert (str): file path to tert npy
 
         Returns:
             dist_arr (tensor): binned pairwise distance matrix with shape NxNx1
@@ -105,8 +140,46 @@ class ProteinNet(Dataset):
         sample_seq = sample['seq']
         seq_len = sample['seq_len']
 
-        pssm_path = f'{self.pssm_dir}/{sample_name}.npz'
-        tert_path = f'{self.tert_dir}/{sample_name}.npz'
+        pssm_path = f'./{self.pssm_dir}/{sample_name}_pssm.npy'
+        tert_path = f'./{self.tert_dir}/{sample_name}_tert.npy'
+
+        # (N, N, 42)
+        ohe_seq = self.seq_to_ohe(sample_seq)
+
+        # (N, N, 42)
+        evo_arr = self.cat_pssm(pssm_path)
+
+        # (N, N, 1)
+        dist_arr = np.expand_dims(self.tert_to_bins(tert_path), 2)
+
+        # cat features and reshape channel first
+        # (84, N, N)
+        feats = np.concatenate([ohe_seq, evo_arr], axis=2).transpose(2, 0, 1)
+
+        return sample_name, feats, dist_arr
 
 
-        return sample
+def test():
+
+    df = 'input/small_dataset.csv'
+    pssm_dir = 'pssm'
+    tert_dir = 'tert'
+    max_len = 250
+
+    dataset = ProteinNet(df, pssm_dir, tert_dir, max_len)
+    sample_name, feats, dist_arr = dataset[20]
+    
+    import matplotlib.pyplot as plt
+
+    plt.imshow(dist_arr, cmap='viridis_r')
+    plt.colorbar()
+    plt.savefig('test.png', dpi=300)
+
+    print(sample_name)
+    #print(feats)
+    print(feats.shape)
+    #print(dist_arr)
+    print(dist_arr.shape)
+
+test()
+

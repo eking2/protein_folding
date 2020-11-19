@@ -59,12 +59,18 @@ class ResNet(nn.Module):
 
         layers = []
 
+        # batchnorm input
         layers.append(nn.BatchNorm2d(in_chan))
+
+        # to 128 channels
         layers.append(nn.Conv2d(in_chan, 128, kernel_size = 1))
 
+        # resnet blocks with dilation cycling
         for i in range(n_blocks):
-            layers.append(ResBlock(dilations[i]))
+            for j in dilations:
+                layers.append(ResBlock(j))
 
+        # output channel number of bins
         layers.append(nn.Conv2d(128, n_dist_bins, kernel_size = 1)) 
 
         self.net = nn.Sequential(*layers)

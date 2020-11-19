@@ -2,6 +2,7 @@
 .DS_Store
 
 # ignore folders
+*.png
 checkpoints/
 logs/
 notebooks/
