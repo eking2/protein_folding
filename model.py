@@ -98,5 +98,7 @@ def test_resnet():
     out = net(x)
     print(out.shape)
 
-#test_resblock()
-test_resnet()
+if __name__ == '__main__':
+
+    #test_resblock()
+    test_resnet()
