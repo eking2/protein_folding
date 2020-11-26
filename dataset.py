@@ -170,7 +170,7 @@ class ProteinNetDataset(Dataset):
         # (84, N, N)
         feats = np.concatenate([ohe_seq, evo_arr], axis=2).transpose(2, 0, 1)
 
-        return feats, dist_arr
+        return feats, dist_arr, seq_len
 
 
 def test():

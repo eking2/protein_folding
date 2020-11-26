@@ -1,6 +1,7 @@
 import yaml
 import logging
 import torch
+import torch.nn.functional as F
 from pathlib import Path
 
 class dotdict(dict):
@@ -78,3 +79,74 @@ def load_checkpoint(checkpoint, model, optimizer=None):
         optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
 
 
+def get_mask(seq_len, labels, contact, max_len):
+
+    '''select region to calculate contact precision over'''
+
+    # make grid
+    seq_range = torch.arange(seq_len)
+    xx, yy = torch.meshgrid(seq_range, seq_range)
+    
+    # distance in sequence
+    # 6 <= x <= 11
+    if contact == 'short':
+        mask = (torch.abs(xx - yy) >= 6) & (torch.abs(xx - yy) <= 11)
+    
+    # 12 <= x <= 23
+    elif contact == 'med':
+        mask = (torch.abs(xx - yy) >= 12) & (torch.abs(xx - yy) <= 23)
+        
+    # >= 24
+    else:
+        mask = torch.abs(xx - yy) >= 24
+        
+    # set contact bin probs
+    # 0-8 A
+    contact_map = torch.where((labels <= 3) & (labels >= 0) == True, 1, 0).view(1, max_len, max_len)
+    
+    # selection mask
+    # ignore disordered
+    not_disordered = torch.where(labels != -1, 1, 0)
+    to_pad = max_len - seq_len
+    mask = (F.pad(mask, (0, to_pad, 0, to_pad)) * not_disordered).view(1, max_len, max_len)
+
+    return mask, contact_map
+
+
+def contact_precision(model_out, labels, seq_len, contact, top, max_len=250):
+
+    '''calculate contact precision over selected sequence distance and length range'''
+
+    assert contact in ['short', 'med', 'long'], 'invalid contact'
+    assert top in ['l', 'l/2', 'l/5'], 'invalid top'
+
+    mask, contact_map = get_mask(seq_len, labels, contact, max_len)
+    mask = mask.view(1, max_len, max_len)
+    contact_map = contact_map.view(1, max_len, max_len)
+
+    # softmax on model output, logits to preds
+    softmaxed = F.softmax(model_out, dim=1)
+    
+    # add probabilities for bins 0-8A 
+    probs = softmaxed[:, :3, :, :].sum(dim=1)
+    
+    # mask out
+    probs = probs * mask
+    
+    # select number of samples
+    if top == 'l/2':
+        res_range = seq_len // 2
+    elif top == 'l/5':
+        res_range = seq_len // 5
+    else:
+        res_range = seq_len
+    
+    # get index of most confident predictions
+    # argsort and order decreasing
+    probs = probs.flatten()
+    probs_idx = torch.argsort(probs)[::-1][:res_range]
+    
+    # get predictions
+    sel_contacts = contact_map.flatten()[probs_idx]
+    
+    return sel_contacts.sum() / res_range * 100

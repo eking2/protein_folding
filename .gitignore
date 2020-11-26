@@ -11,3 +11,6 @@ pssm/
 tert/
 input/
 __pycache__
+.ipynb_checkpoints
+*.npy
+*.ipynb
