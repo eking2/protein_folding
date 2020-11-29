@@ -3,6 +3,7 @@
 
 # ignore folders
 *.png
+debug/
 checkpoints/
 logs/
 notebooks/

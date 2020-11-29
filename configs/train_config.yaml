@@ -1,6 +1,6 @@
-name: train_config
+name: cluster_train
 
-train_df: './input/small_dataset.csv'
+train_df: './input/train_dataset.csv'
 valid_df: './input/validation_dataset.csv'
 pssm_dir: 'pssm'
 tert_dir: 'tert'
@@ -8,6 +8,6 @@ max_len: 250
 batch_size: 1
 input_shape: 1 84 250 250
 n_dist_bins: 10
-n_blocks: 4
-n_epochs: 4
+n_blocks: 20
+n_epochs: 50
 lr: 0.001

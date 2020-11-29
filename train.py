@@ -28,7 +28,7 @@ def train_one_epoch(model, loader, optimizer, criterion):
     epoch_loss = 0
     epoch_acc = 0
 
-    for batch_idx, (feats, dist_arr, seq_len) in enumerate(loader):
+    for batch_idx, (feats, dist_arr, seq_len, name) in enumerate(loader):
 
         feats = feats.to(device).float()
         dist_arr = dist_arr.to(device).long().squeeze(0)  # remove batch dim for loss
@@ -66,7 +66,7 @@ def run_eval(model, loader, criterion):
 
     with torch.no_grad():
 
-        for batch_idx, (feats, dist_arr, seq_len) in enumerate(loader):
+        for batch_idx, (feats, dist_arr, seq_len, name) in enumerate(loader):
 
             feats = feats.to(device).float()
             dist_arr = dist_arr.to(device).long().squeeze(0)
@@ -115,6 +115,8 @@ def run_n_epochs(epochs, model, train_loader, valid_loader, optimizer, criterion
         logging.info(f'Epoch: {epoch:02} | Time: {epoch_time:.2f}m')
         logging.info(f'\tTrain Loss: {train_loss:.3f} | Train Acc: {train_acc*100:.2f}%')
         logging.info(f'\tValid Loss: {valid_loss:.3f} | Valid Acc: {valid_acc*100:.2f}%')
+
+    return history
 
 if __name__ == '__main__':
 

@@ -79,12 +79,12 @@ def load_checkpoint(checkpoint, model, optimizer=None):
         optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
 
 
-def get_mask(seq_len, labels, contact, max_len):
+def get_mask(seq_len, labels, contact, max_len, device):
 
     '''select region to calculate contact precision over'''
 
     # make grid
-    seq_range = torch.arange(seq_len)
+    seq_range = torch.arange(seq_len.item())
     xx, yy = torch.meshgrid(seq_range, seq_range)
     
     # distance in sequence
@@ -99,28 +99,31 @@ def get_mask(seq_len, labels, contact, max_len):
     # >= 24
     else:
         mask = torch.abs(xx - yy) >= 24
+
+    mask = mask.to(device)
         
     # set contact bin probs
     # 0-8 A
-    contact_map = torch.where((labels <= 3) & (labels >= 0) == True, 1, 0).view(1, max_len, max_len)
+    condition = (labels <= 3) & (labels >= 0)
+    contact_map = torch.where(condition, torch.tensor(1.).to(device), torch.tensor(0.).to(device)).view(1, max_len, max_len)
     
     # selection mask
     # ignore disordered
-    not_disordered = torch.where(labels != -1, 1, 0)
-    to_pad = max_len - seq_len
+    not_disordered = torch.where(labels != -1, torch.tensor(1.).to(device), torch.tensor(0.).to(device))
+    to_pad = max_len - seq_len.item()
     mask = (F.pad(mask, (0, to_pad, 0, to_pad)) * not_disordered).view(1, max_len, max_len)
 
     return mask, contact_map
 
 
-def contact_precision(model_out, labels, seq_len, contact, top, max_len=250):
+def contact_precision(model_out, labels, seq_len, contact, top, device, max_len=250):
 
     '''calculate contact precision over selected sequence distance and length range'''
 
     assert contact in ['short', 'med', 'long'], 'invalid contact'
     assert top in ['l', 'l/2', 'l/5'], 'invalid top'
 
-    mask, contact_map = get_mask(seq_len, labels, contact, max_len)
+    mask, contact_map = get_mask(seq_len, labels, contact, max_len, device)
     mask = mask.view(1, max_len, max_len)
     contact_map = contact_map.view(1, max_len, max_len)
 
@@ -140,13 +143,21 @@ def contact_precision(model_out, labels, seq_len, contact, top, max_len=250):
         res_range = seq_len // 5
     else:
         res_range = seq_len
+
+    res_range = res_range.item()
     
     # get index of most confident predictions
     # argsort and order decreasing
     probs = probs.flatten()
-    probs_idx = torch.argsort(probs)[::-1][:res_range]
+    probs_idx = torch.argsort(probs, descending=True)[:res_range]
+
+    # from probability to binary contact prediction
+    pred = torch.tensor([1 if probs[idx] >= 0.5 else 0 for idx in probs_idx]).to(device)
     
-    # get predictions
+    # get true labels at selected indices
     sel_contacts = contact_map.flatten()[probs_idx]
+
+    # compare
+    correct = (pred == sel_contacts).sum().float()
     
-    return sel_contacts.sum() / res_range * 100
+    return (correct / res_range * 100).item()
