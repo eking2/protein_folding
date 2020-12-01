@@ -159,5 +159,6 @@ def contact_precision(model_out, labels, seq_len, contact, top, device, max_len=
 
     # compare
     correct = (pred == sel_contacts).sum().float()
+    acc = (correct / res_range * 100).item()
     
-    return (correct / res_range * 100).item()
+    return acc, correct.long().item(), res_range

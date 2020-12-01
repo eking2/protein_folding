@@ -10,6 +10,7 @@ import time
 import logging
 from pprint import pformat
 from utils import parse_params, init_logger, save_checkpoint, load_checkpoint
+from tqdm.auto import tqdm
 import argparse
 
 def parse_args():
@@ -28,10 +29,12 @@ def train_one_epoch(model, loader, optimizer, criterion):
     epoch_loss = 0
     epoch_acc = 0
 
-    for batch_idx, (feats, dist_arr, seq_len, name) in enumerate(loader):
+    loop = tqdm(enumerate(loader), total=len(loader), leave=False)
+
+    for batch_idx, (feats, dist_arr, seq_len, name) in loop:
 
         feats = feats.to(device).float()
-        dist_arr = dist_arr.to(device).long().squeeze(0)  # remove batch dim for loss
+        dist_arr = dist_arr.to(device).long().squeeze(1)  # remove channel dim for loss
         elems = (dist_arr != -1).sum()  # non-padding elements
 
         # forward
@@ -69,7 +72,7 @@ def run_eval(model, loader, criterion):
         for batch_idx, (feats, dist_arr, seq_len, name) in enumerate(loader):
 
             feats = feats.to(device).float()
-            dist_arr = dist_arr.to(device).long().squeeze(0)
+            dist_arr = dist_arr.to(device).long().squeeze(1)
             elems = (dist_arr != -1).sum()
 
             out = model(feats)
@@ -85,7 +88,7 @@ def run_eval(model, loader, criterion):
     return epoch_loss / len(loader), epoch_acc / len(loader)
 
 
-def run_n_epochs(epochs, model, train_loader, valid_loader, optimizer, criterion, name):
+def run_n_epochs(epochs, model, train_loader, valid_loader, optimizer, criterion, scheduler, name):
 
     # hold accuracy/loss at end of each epoch
     history = defaultdict(list)
@@ -97,6 +100,7 @@ def run_n_epochs(epochs, model, train_loader, valid_loader, optimizer, criterion
 
         train_loss, train_acc = train_one_epoch(model, train_loader, optimizer, criterion)
         valid_loss, valid_acc = run_eval(model, valid_loader, criterion)
+        scheduler.step(valid_loss)
         end = time.time()
 
         epoch_time = (end - start)/60
@@ -111,6 +115,8 @@ def run_n_epochs(epochs, model, train_loader, valid_loader, optimizer, criterion
         if valid_loss < best_valid_loss:
             best_valid_loss = valid_loss
             save_checkpoint(model, optimizer, epoch, name)
+        elif epoch == epochs:
+            save_checkpoint(model, optimizer, epoch, name, delete=False)
 
         logging.info(f'Epoch: {epoch:02} | Time: {epoch_time:.2f}m')
         logging.info(f'\tTrain Loss: {train_loss:.3f} | Train Acc: {train_acc*100:.2f}%')
@@ -147,15 +153,16 @@ if __name__ == '__main__':
 
     # setup data iterators and model
     train_dataset = ProteinNetDataset(train_df, pssm_dir, tert_dir, max_len)
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=4, pin_memory=True)
 
     valid_dataset = ProteinNetDataset(valid_df, pssm_dir, tert_dir, max_len)
-    valid_loader = DataLoader(valid_dataset, batch_size=batch_size, shuffle=False)
+    valid_loader = DataLoader(valid_dataset, batch_size=batch_size, shuffle=False, num_workers=4, pin_memory=True)
 
     model = ResNet(input_shape, n_dist_bins, n_blocks).to(device)
     criterion = nn.CrossEntropyLoss(ignore_index=-1)
     optimizer = optim.Adam(model.parameters(), lr=lr)
+    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, factor=0.9, patience=5, verbose=True)
 
     # run training
-    run_n_epochs(n_epochs, model, train_loader, valid_loader, optimizer, criterion, name)
+    run_n_epochs(n_epochs, model, train_loader, valid_loader, optimizer, criterion, scheduler, name)
 

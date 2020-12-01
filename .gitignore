@@ -4,8 +4,10 @@
 # ignore folders
 *.png
 debug/
+save_checkpoints/
 checkpoints/
 logs/
+configs/
 notebooks/
 outputs/
 pssm/
@@ -15,3 +17,4 @@ __pycache__
 .ipynb_checkpoints
 *.npy
 *.ipynb
+*.csv
