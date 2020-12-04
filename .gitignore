@@ -13,6 +13,7 @@ outputs/
 pssm/
 tert/
 input/
+output/
 __pycache__
 .ipynb_checkpoints
 *.npy

@@ -83,7 +83,7 @@ def get_precision_stats(agg_df, contact_types):
 
     df = agg_df.copy()
 
-    # drop name 
+    # drop name
     df = df.drop('name', axis=1)
 
     df = df.sum(axis=0).to_frame().reset_index()
@@ -117,6 +117,8 @@ if __name__ == '__main__':
     checkpoint = params.checkpoint
     input_shape = tuple(int(x) for x in params.input_shape.split())
 
+    name = checkpoint.split('/')[-1][:-4]
+
     contact_types = ['short', 'med', 'long']
     tops = ['l', 'l/2', 'l/5']
     metrics = list(itertools.product(contact_types, tops))
@@ -134,6 +136,6 @@ if __name__ == '__main__':
     loss, acc, contact_df, agg_df = run_test(model, loader, criterion, metrics, device)
     get_precision_stats(agg_df, contact_types)
 
-    contact_df.to_csv('contact_df.csv', index=False)
-    agg_df.to_csv('agg_df.csv', index=False)
+    contact_df.to_csv(f'output/{name}_contact_df.csv', index=False)
+    agg_df.to_csv(f'output/{name}_agg_df.csv', index=False)
 
