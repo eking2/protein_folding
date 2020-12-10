@@ -77,7 +77,7 @@ def run_test(model, loader, criterion, metrics, device):
     return epoch_loss / len(loader), epoch_acc / len(loader), contact_df, agg_df
 
 
-def get_precision_stats(agg_df, contact_types):
+def get_precision_stats(agg_df, contact_types, name):
 
     '''calculate precision stats over all pairwise predictions (not by each sample)'''
 
@@ -99,7 +99,7 @@ def get_precision_stats(agg_df, contact_types):
         return correct / length
 
     df_agg = df.groupby('metric').apply(calc_precisions)
-    df_agg.to_csv('contact_precisions.csv')
+    df_agg.to_csv(f'./output/{name}_contact_precisions.csv')
 
 
 if __name__ == '__main__':
@@ -117,7 +117,7 @@ if __name__ == '__main__':
     checkpoint = params.checkpoint
     input_shape = tuple(int(x) for x in params.input_shape.split())
 
-    name = checkpoint.split('/')[-1][:-4]
+    name = checkpoint.split('/')[-1][:-3]
 
     contact_types = ['short', 'med', 'long']
     tops = ['l', 'l/2', 'l/5']
@@ -134,7 +134,7 @@ if __name__ == '__main__':
     criterion = nn.CrossEntropyLoss(ignore_index=-1)
 
     loss, acc, contact_df, agg_df = run_test(model, loader, criterion, metrics, device)
-    get_precision_stats(agg_df, contact_types)
+    get_precision_stats(agg_df, contact_types, name)
 
     contact_df.to_csv(f'output/{name}_contact_df.csv', index=False)
     agg_df.to_csv(f'output/{name}_agg_df.csv', index=False)
