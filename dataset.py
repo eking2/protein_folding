@@ -59,7 +59,7 @@ class ProteinNetDataset(Dataset):
 
         # (N, 21) to (N, N, 21)
         # same as np.tile(ohe, (N, 1, 1)) or np.broadcast_to(ohe, (N, N, 21))
-        ohe_repeat = np.repeat(np.expand_dims(ohe, 0), self.max_len, axis=0)  
+        ohe_repeat = np.repeat(np.expand_dims(ohe, 0), self.max_len, axis=0)
 
         ohe_seq[:, :, :21] = ohe_repeat
         ohe_seq[:, :, 21:] = np.transpose(ohe_repeat, (1, 0, 2))
@@ -81,7 +81,7 @@ class ProteinNetDataset(Dataset):
 
         # 20xN in amino acid alphabetical order, 1xN information content last row
 
-        # reshape flat to (N, 21) 
+        # reshape flat to (N, 21)
         pssm_ic = np.load(pssm_ic).reshape(21, -1).T
 
         # pad
@@ -130,7 +130,7 @@ class ProteinNetDataset(Dataset):
 
         # skip fully ordered samples
         if sum(mask_idx) > 0:
- 
+
             # mask out
             dist_arr[mask_idx, :] = -1
             dist_arr[:, mask_idx] = -1
@@ -175,17 +175,17 @@ class ProteinNetDataset(Dataset):
 
 def test():
 
-    df = 'input/small_dataset.csv'
+    df = 'input/training_30_dataset.csv'
     pssm_dir = 'pssm'
     tert_dir = 'tert'
     max_len = 250
 
     dataset = ProteinNetDataset(df, pssm_dir, tert_dir, max_len)
-    feats, dist_arr = dataset[8]
-    
+    feats, dist_arr, seq_len, sample_name = dataset[10]
+
     import matplotlib.pyplot as plt
 
-    plt.imshow(dist_arr, cmap='viridis_r')
+    plt.imshow(dist_arr.reshape(250, 250), cmap='viridis_r')
     plt.colorbar()
     plt.savefig('test.png', dpi=300)
 
