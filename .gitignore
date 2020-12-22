@@ -2,7 +2,6 @@
 .DS_Store
 
 # ignore folders
-*.png
 debug/
 save_checkpoints/
 checkpoints/
