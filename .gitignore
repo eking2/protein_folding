@@ -4,16 +4,9 @@
 # ignore folders
 debug/
 save_checkpoints/
-checkpoints/
-logs/
-configs/
+checkpoints/*.pt
 notebooks/
-outputs/
-pssm/
-tert/
-input/
-output/
+pssm/*.npy
+tert/*.npy
 __pycache__
 .ipynb_checkpoints
-*.npy
-*.csv

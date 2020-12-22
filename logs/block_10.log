@@ -1,0 +1,103 @@
+2020-12-03 02:01:02: INFO: {'batch_size': 1,
+ 'input_shape': '1 84 250 250',
+ 'lr': 0.001,
+ 'max_len': 250,
+ 'n_blocks': 10,
+ 'n_dist_bins': 10,
+ 'n_epochs': 30,
+ 'name': 'block_10',
+ 'pssm_dir': 'pssm',
+ 'tert_dir': 'tert',
+ 'train_df': './input/training_30_dataset.csv',
+ 'valid_df': './input/validation_dataset.csv'}
+2020-12-03 02:01:02: INFO: device: cuda
+2020-12-03 02:32:37: INFO: Epoch: 01 | Time: 31.47m
+2020-12-03 02:32:37: INFO: 	Train Loss: 1.605 | Train Acc: 49.67%
+2020-12-03 02:32:37: INFO: 	Valid Loss: 1.524 | Valid Acc: 51.00%
+2020-12-03 03:04:04: INFO: Epoch: 02 | Time: 62.90m
+2020-12-03 03:04:04: INFO: 	Train Loss: 1.414 | Train Acc: 54.01%
+2020-12-03 03:04:04: INFO: 	Valid Loss: 1.420 | Valid Acc: 53.61%
+2020-12-03 03:35:36: INFO: Epoch: 03 | Time: 94.44m
+2020-12-03 03:35:36: INFO: 	Train Loss: 1.357 | Train Acc: 55.28%
+2020-12-03 03:35:36: INFO: 	Valid Loss: 1.417 | Valid Acc: 53.13%
+2020-12-03 04:07:10: INFO: Epoch: 04 | Time: 126.00m
+2020-12-03 04:07:10: INFO: 	Train Loss: 1.323 | Train Acc: 55.99%
+2020-12-03 04:07:10: INFO: 	Valid Loss: 1.366 | Valid Acc: 54.47%
+2020-12-03 04:38:43: INFO: Epoch: 05 | Time: 157.56m
+2020-12-03 04:38:43: INFO: 	Train Loss: 1.297 | Train Acc: 56.58%
+2020-12-03 04:38:43: INFO: 	Valid Loss: 1.333 | Valid Acc: 55.49%
+2020-12-03 05:10:18: INFO: Epoch: 06 | Time: 189.14m
+2020-12-03 05:10:18: INFO: 	Train Loss: 1.275 | Train Acc: 57.07%
+2020-12-03 05:10:18: INFO: 	Valid Loss: 1.362 | Valid Acc: 54.35%
+2020-12-03 05:41:53: INFO: Epoch: 07 | Time: 220.72m
+2020-12-03 05:41:53: INFO: 	Train Loss: 1.257 | Train Acc: 57.56%
+2020-12-03 05:41:53: INFO: 	Valid Loss: 1.460 | Valid Acc: 52.22%
+2020-12-03 06:13:23: INFO: Epoch: 08 | Time: 252.23m
+2020-12-03 06:13:23: INFO: 	Train Loss: 1.238 | Train Acc: 57.99%
+2020-12-03 06:13:23: INFO: 	Valid Loss: 1.393 | Valid Acc: 53.59%
+2020-12-03 06:44:57: INFO: Epoch: 09 | Time: 283.80m
+2020-12-03 06:44:57: INFO: 	Train Loss: 1.223 | Train Acc: 58.34%
+2020-12-03 06:44:57: INFO: 	Valid Loss: 1.351 | Valid Acc: 54.21%
+2020-12-03 07:16:26: INFO: Epoch: 10 | Time: 315.28m
+2020-12-03 07:16:26: INFO: 	Train Loss: 1.206 | Train Acc: 58.78%
+2020-12-03 07:16:26: INFO: 	Valid Loss: 1.351 | Valid Acc: 54.36%
+2020-12-03 07:48:01: INFO: Epoch: 11 | Time: 346.86m
+2020-12-03 07:48:01: INFO: 	Train Loss: 1.192 | Train Acc: 59.12%
+2020-12-03 07:48:01: INFO: 	Valid Loss: 1.354 | Valid Acc: 54.76%
+2020-12-03 08:19:29: INFO: Epoch: 12 | Time: 378.33m
+2020-12-03 08:19:29: INFO: 	Train Loss: 1.171 | Train Acc: 59.61%
+2020-12-03 08:19:29: INFO: 	Valid Loss: 1.302 | Valid Acc: 55.78%
+2020-12-03 08:51:01: INFO: Epoch: 13 | Time: 409.86m
+2020-12-03 08:51:01: INFO: 	Train Loss: 1.156 | Train Acc: 59.98%
+2020-12-03 08:51:01: INFO: 	Valid Loss: 1.352 | Valid Acc: 54.80%
+2020-12-03 09:22:44: INFO: Epoch: 14 | Time: 441.58m
+2020-12-03 09:22:44: INFO: 	Train Loss: 1.141 | Train Acc: 60.32%
+2020-12-03 09:22:44: INFO: 	Valid Loss: 1.292 | Valid Acc: 56.18%
+2020-12-03 09:54:24: INFO: Epoch: 15 | Time: 473.25m
+2020-12-03 09:54:24: INFO: 	Train Loss: 1.127 | Train Acc: 60.66%
+2020-12-03 09:54:24: INFO: 	Valid Loss: 1.341 | Valid Acc: 55.47%
+2020-12-03 10:25:58: INFO: Epoch: 16 | Time: 504.81m
+2020-12-03 10:25:58: INFO: 	Train Loss: 1.115 | Train Acc: 60.97%
+2020-12-03 10:25:58: INFO: 	Valid Loss: 1.312 | Valid Acc: 55.90%
+2020-12-03 10:57:26: INFO: Epoch: 17 | Time: 536.27m
+2020-12-03 10:57:26: INFO: 	Train Loss: 1.099 | Train Acc: 61.35%
+2020-12-03 10:57:26: INFO: 	Valid Loss: 1.445 | Valid Acc: 52.69%
+2020-12-03 11:29:04: INFO: Epoch: 18 | Time: 567.92m
+2020-12-03 11:29:04: INFO: 	Train Loss: 1.087 | Train Acc: 61.64%
+2020-12-03 11:29:04: INFO: 	Valid Loss: 1.343 | Valid Acc: 54.91%
+2020-12-03 12:00:35: INFO: Epoch: 19 | Time: 599.42m
+2020-12-03 12:00:35: INFO: 	Train Loss: 1.076 | Train Acc: 61.92%
+2020-12-03 12:00:35: INFO: 	Valid Loss: 1.390 | Valid Acc: 53.59%
+2020-12-03 12:32:07: INFO: Epoch: 20 | Time: 630.97m
+2020-12-03 12:32:07: INFO: 	Train Loss: 1.063 | Train Acc: 62.21%
+2020-12-03 12:32:07: INFO: 	Valid Loss: 1.400 | Valid Acc: 53.34%
+2020-12-03 13:03:41: INFO: Epoch: 21 | Time: 662.53m
+2020-12-03 13:03:41: INFO: 	Train Loss: 1.043 | Train Acc: 62.72%
+2020-12-03 13:03:41: INFO: 	Valid Loss: 1.366 | Valid Acc: 54.67%
+2020-12-03 13:35:09: INFO: Epoch: 22 | Time: 694.00m
+2020-12-03 13:35:09: INFO: 	Train Loss: 1.030 | Train Acc: 63.06%
+2020-12-03 13:35:09: INFO: 	Valid Loss: 1.379 | Valid Acc: 53.92%
+2020-12-03 14:06:37: INFO: Epoch: 23 | Time: 725.46m
+2020-12-03 14:06:37: INFO: 	Train Loss: 1.019 | Train Acc: 63.32%
+2020-12-03 14:06:37: INFO: 	Valid Loss: 1.410 | Valid Acc: 54.12%
+2020-12-03 14:38:13: INFO: Epoch: 24 | Time: 757.06m
+2020-12-03 14:38:13: INFO: 	Train Loss: 1.007 | Train Acc: 63.60%
+2020-12-03 14:38:13: INFO: 	Valid Loss: 1.300 | Valid Acc: 56.32%
+2020-12-03 15:09:43: INFO: Epoch: 25 | Time: 788.56m
+2020-12-03 15:09:43: INFO: 	Train Loss: 0.998 | Train Acc: 63.83%
+2020-12-03 15:09:43: INFO: 	Valid Loss: 1.375 | Valid Acc: 54.99%
+2020-12-03 15:41:29: INFO: Epoch: 26 | Time: 820.32m
+2020-12-03 15:41:29: INFO: 	Train Loss: 0.988 | Train Acc: 64.10%
+2020-12-03 15:41:29: INFO: 	Valid Loss: 1.527 | Valid Acc: 52.51%
+2020-12-03 16:13:03: INFO: Epoch: 27 | Time: 851.90m
+2020-12-03 16:13:03: INFO: 	Train Loss: 0.970 | Train Acc: 64.56%
+2020-12-03 16:13:03: INFO: 	Valid Loss: 1.401 | Valid Acc: 55.34%
+2020-12-03 16:44:37: INFO: Epoch: 28 | Time: 883.47m
+2020-12-03 16:44:37: INFO: 	Train Loss: 0.958 | Train Acc: 64.85%
+2020-12-03 16:44:37: INFO: 	Valid Loss: 1.422 | Valid Acc: 55.04%
+2020-12-03 17:16:07: INFO: Epoch: 29 | Time: 914.96m
+2020-12-03 17:16:07: INFO: 	Train Loss: 0.948 | Train Acc: 65.10%
+2020-12-03 17:16:07: INFO: 	Valid Loss: 1.385 | Valid Acc: 55.09%
+2020-12-03 17:47:40: INFO: Epoch: 30 | Time: 946.51m
+2020-12-03 17:47:40: INFO: 	Train Loss: 0.940 | Train Acc: 65.31%
+2020-12-03 17:47:40: INFO: 	Valid Loss: 1.430 | Valid Acc: 54.45%
